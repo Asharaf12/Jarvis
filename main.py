@@ -11,6 +11,7 @@ voice_thread = None
 voice_assistant_running = False
 
 def start_voice_assistant():
+    """Start the voice assistant in a separate thread."""
     global voice_thread, voice_assistant_running
     if not voice_assistant_running:
         voice_assistant_running = True
@@ -21,6 +22,7 @@ def start_voice_assistant():
         speak("Voice assistant is already running.")
 
 def stop_voice_assistant():
+    """Stop the voice assistant."""
     global voice_assistant_running
     if voice_assistant_running:
         speak("Going to sleep. Goodbye!")
@@ -29,9 +31,11 @@ def stop_voice_assistant():
         speak("Voice assistant is not running.")
 
 def minimize_window(root):
-    root.iconify()  # Minimize the window
+    """Minimize the application window."""
+    root.iconify()
 
 def main():
+    """Main function to initialize the application."""
     # Initialize the database
     initialize_database()
 
@@ -99,11 +103,22 @@ def main():
 
     # Add an exit button
     exit_button = ttk.Button(root, text="Exit", command=root.destroy, style="Custom.TButton")
-    canvas.create_window(screen_width - 50, 20, window=exit_button)  # Place exit button r
+    canvas.create_window(screen_width - 50, 20, window=exit_button)  # Place exit button in top-right corner
 
-    #  Add a Minimize Button
+    # Add a Minimize Button
     minimize_button = ttk.Button(root, text="Minimize", command=lambda: minimize_window(root), style="Custom.TButton")
-    canvas.create_window(50, 20, window=minimize_button)  # Place minimize button
+    canvas.create_window(50, 20, window=minimize_button)  # Place minimize button in top-left corner
+
+    # Handle window close event
+    def on_closing():
+        """Handle the window closing event."""
+        if voice_assistant_running:
+            stop_voice_assistant()
+        root.destroy()
+
+    root.protocol("WM_DELETE_WINDOW", on_closing)
+
+    # Start the main loop
     root.mainloop()
 
 if __name__ == "__main__":

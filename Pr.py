@@ -398,7 +398,7 @@ def main():
     root.geometry("800x600")  # Adjust window size to fit the background image
 
     # Load the background image
-    background_image_path = "bg.jpg"  # Replace with your image path
+    background_image_path = "bg2.webp"  # Replace with your image path
     if not os.path.exists(background_image_path):
         messagebox.showerror("Error", "Background image not found!")
         return

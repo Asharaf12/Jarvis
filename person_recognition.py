@@ -10,6 +10,7 @@ import numpy as np
 DATABASE_FILE = "person_database.db"
 
 def initialize_database():
+    """Initialize the SQLite database with a table for storing person details."""
     conn = sqlite3.connect(DATABASE_FILE)
     cursor = conn.cursor()
     cursor.execute('''
@@ -27,14 +28,16 @@ def initialize_database():
     conn.commit()
     conn.close()
 
-# Function to upload a photo
 def upload_photo(photo_path_label):
+    """Open a file dialog to upload a photo and update the label with the file path."""
     file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.jpg *.png *.jpeg")])
     if file_path:
         photo_path_label.config(text=file_path)
 
 def add_details():
+    """Open a window to add person details to the database."""
     def save_details():
+        """Save the entered details to the database."""
         name = name_entry.get()
         dob = dob_entry.get()
         address = address_entry.get()
@@ -80,6 +83,7 @@ def add_details():
         clear_form()
 
     def clear_form():
+        """Clear all fields in the form."""
         name_entry.delete(0, tk.END)
         dob_entry.delete(0, tk.END)
         address_entry.delete(0, tk.END)
@@ -124,7 +128,9 @@ def add_details():
     tk.Button(add_window, text="Add Details", command=save_details).pack(pady=10)
 
 def delete_person_by_photo():
+    """Delete a person's details by matching their photo."""
     def delete_details():
+        """Delete the person's details after matching the photo."""
         search_photo_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.jpg *.png *.jpeg")])
         if not search_photo_path:
             return
@@ -132,7 +138,7 @@ def delete_person_by_photo():
         try:
             # Load and encode the uploaded image
             uploaded_image = face_recognition.load_image_file(search_photo_path)
-            uploaded_image = resize_image(uploaded_image)  # Resize image to reduce processing time
+            uploaded_image = resize_image(uploaded_image)
             uploaded_encodings = face_recognition.face_encodings(uploaded_image)
 
             if not uploaded_encodings:
@@ -157,14 +163,14 @@ def delete_person_by_photo():
                     continue  # Skip if file does not exist
 
                 stored_image = face_recognition.load_image_file(photo_path)
-                stored_image = resize_image(stored_image)  # Resize image to reduce processing time
+                stored_image = resize_image(stored_image)
                 stored_encodings = face_recognition.face_encodings(stored_image)
 
                 if not stored_encodings:
                     continue  # Skip if no face detected
 
                 stored_encoding = stored_encodings[0]
-                match = face_recognition.compare_faces([stored_encoding], uploaded_encoding)
+                match = face_recognition.compare_faces([stored_encoding], uploaded_encoding, tolerance=0.5)  # Adjusted tolerance
 
                 if match[0]:
                     # Confirm deletion
@@ -192,7 +198,9 @@ def delete_person_by_photo():
     tk.Button(delete_window, text="Upload Photo to Delete", command=delete_details).pack(pady=20)
 
 def replace_details():
+    """Replace a person's details by matching their photo."""
     def replace_person_details():
+        """Replace the person's details after matching the photo."""
         search_photo_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.jpg *.png *.jpeg")])
         if not search_photo_path:
             return
@@ -200,7 +208,7 @@ def replace_details():
         try:
             # Load and encode the uploaded image
             uploaded_image = face_recognition.load_image_file(search_photo_path)
-            uploaded_image = resize_image(uploaded_image)  # Resize image to reduce processing time
+            uploaded_image = resize_image(uploaded_image)
             uploaded_encodings = face_recognition.face_encodings(uploaded_image)
 
             if not uploaded_encodings:
@@ -225,14 +233,14 @@ def replace_details():
                     continue  # Skip if file does not exist
 
                 stored_image = face_recognition.load_image_file(photo_path)
-                stored_image = resize_image(stored_image)  # Resize image to reduce processing time
+                stored_image = resize_image(stored_image)
                 stored_encodings = face_recognition.face_encodings(stored_image)
 
                 if not stored_encodings:
                     continue  # Skip if no face detected
 
                 stored_encoding = stored_encodings[0]
-                match = face_recognition.compare_faces([stored_encoding], uploaded_encoding)
+                match = face_recognition.compare_faces([stored_encoding], uploaded_encoding, tolerance=0.5)  # Adjusted tolerance
 
                 if match[0]:
                     # Open a new window to replace details
@@ -271,6 +279,7 @@ def replace_details():
                     state_entry.pack()
 
                     def save_replaced_details():
+                        """Save the replaced details to the database."""
                         new_name = name_entry.get()
                         new_dob = dob_entry.get()
                         new_address = address_entry.get()
@@ -311,7 +320,9 @@ def replace_details():
     tk.Button(replace_window, text="Upload Photo to Replace", command=replace_person_details).pack(pady=20)
 
 def search_person():
+    """Search for a person by matching their photo."""
     def search_by_photo():
+        """Search for a person by uploading their photo."""
         search_photo_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.jpg *.png *.jpeg")])
         if not search_photo_path:
             return
@@ -319,7 +330,7 @@ def search_person():
         try:
             # Load and encode the uploaded image
             uploaded_image = face_recognition.load_image_file(search_photo_path)
-            uploaded_image = resize_image(uploaded_image)  # Resize image to reduce processing time
+            uploaded_image = resize_image(uploaded_image)
             uploaded_encodings = face_recognition.face_encodings(uploaded_image)
 
             if not uploaded_encodings:
@@ -344,14 +355,14 @@ def search_person():
                     continue  # Skip if file does not exist
 
                 stored_image = face_recognition.load_image_file(photo_path)
-                stored_image = resize_image(stored_image)  # Resize image to reduce processing time
+                stored_image = resize_image(stored_image)
                 stored_encodings = face_recognition.face_encodings(stored_image)
 
                 if not stored_encodings:
                     continue  # Skip if no face detected
 
                 stored_encoding = stored_encodings[0]
-                match = face_recognition.compare_faces([stored_encoding], uploaded_encoding)
+                match = face_recognition.compare_faces([stored_encoding], uploaded_encoding, tolerance=0.5)  # Adjusted tolerance
 
                 if match[0]:
                     result = (
@@ -385,8 +396,8 @@ def resize_image(image, max_size=500):
     if max(width, height) > max_size:
         ratio = max_size / max(width, height)
         new_size = (int(width * ratio), int(height * ratio))
-        pil_image = pil_image.resize(new_size, Image.Resampling.LANCZOS)  # Updated resampling method
-        return np.array(pil_image)  # Convert PIL.Image back to NumPy array
+        pil_image = pil_image.resize(new_size, Image.Resampling.LANCZOS)
+        return np.array(pil_image)
     return image
 
 # Main application
@@ -395,16 +406,16 @@ def main():
 
     root = tk.Tk()
     root.title("Person Database")
-    root.geometry("800x600")  # Adjust window size to fit the background image
+    root.geometry("800x600")
 
     # Load the background image
-    background_image_path = "bg.jpg"  # Replace with your image path
+    background_image_path = "bg2.webp"  # Replace with your image path
     if not os.path.exists(background_image_path):
         messagebox.showerror("Error", "Background image not found!")
         return
 
     background_image = Image.open(background_image_path)
-    background_image = background_image.resize((800, 600), Image.Resampling.LANCZOS)  # Resize to fit window
+    background_image = background_image.resize((800, 600), Image.Resampling.LANCZOS)
     background_photo = ImageTk.PhotoImage(background_image)
 
     # Create a Canvas widget to display the background image

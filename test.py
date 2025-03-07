@@ -1,9 +1,8 @@
 import os
-from voice_assistant import main as voice_assistant_main, speak,listen
+from voice_assistant import main as voice_assistant_main, speak, listen
 from person_recognition import initialize_database, add_details, search_person, delete_person_by_photo, replace_details
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import threading
 
@@ -28,6 +27,9 @@ def stop_voice_assistant():
         voice_assistant_running = False
     else:
         speak("Voice assistant is not running.")
+
+def minimize_window(root):
+    root.iconify()  # Minimize the window
 
 def main():
     # Initialize the database
@@ -64,20 +66,17 @@ def main():
     # Configure button style
     style.configure(
         "Custom.TButton",
-        background="#f0f0f0",  # Light gray background
-        foreground="#333333",  # Dark gray text
-        font=("Helvetica", 12),  # Larger font size
-        padding=3,  # Increased padding for larger buttons
-        borderwidth=1,  # Thin border
-        relief="flat",  # Flat appearance
-        width=20,  # Set button width
+        font=("Helvetica", 12),
+        padding=3,
+        borderwidth=1,
+        relief="flat",
     )
 
     # Add hover effects
     style.map(
         "Custom.TButton",
-        background=[("active", "#e0e0e0")],  # Slightly darker gray on hover
-        foreground=[("active", "#000000")],  # Black text on hover
+        background=[("active", "#e0e0e0")],
+        foreground=[("active", "#000000")],
     )
 
     # Add buttons on top of the background image
@@ -98,10 +97,13 @@ def main():
     canvas.create_window(200, screen_height - 250, window=start_voice_button)
     canvas.create_window(200, screen_height - 200, window=stop_voice_button)
 
-    # Add an exit button to close the full-screen window
+    # Add an exit button
     exit_button = ttk.Button(root, text="Exit", command=root.destroy, style="Custom.TButton")
-    canvas.create_window(screen_width - 50, 20, window=exit_button)  # Place exit button at the top-right in corner
+    canvas.create_window(screen_width - 50, 20, window=exit_button)  # Place exit button
 
+    #  Add a Minimize Button
+    minimize_button = ttk.Button(root, text="Minimize", command=lambda: minimize_window(root), style="Custom.TButton")
+    canvas.create_window(50, 20, window=minimize_button)  # Place minimize button
     root.mainloop()
 
 if __name__ == "__main__":
